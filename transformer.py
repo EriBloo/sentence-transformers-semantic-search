@@ -32,13 +32,19 @@ def score(search: str, possible: list[str]) -> list[Score]:
     
 def cache_corpus_embeddings(datasets: list[Dataset]) -> None:
     model = SentenceTransformer(model_path)
+
     ids = pluck(datasets, 'id')
     names = pluck(datasets, 'name')
 
     corpus_embeddings = model.encode(names, convert_to_numpy=True)
 
+    cached = __load_corpus_embeddings()
+    filtered = [embedding for embedding in cached if embedding['id'] not in ids]
+    cached_ids = pluck(filtered, 'id')
+    cached_embeddings = pluck(filtered, 'embedding')
+
     with open(corpus_embeddings_path, 'wb') as fOut:
-        pickle.dump({'ids': ids, 'embeddings': corpus_embeddings}, fOut)
+        pickle.dump({'ids': cached_ids + ids, 'embeddings': cached_embeddings + corpus_embeddings}, fOut)
 
 def __load_corpus_embeddings() -> list[Embedding]:
     if not os.path.exists(corpus_embeddings_path):
