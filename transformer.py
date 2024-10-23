@@ -40,11 +40,16 @@ def cache_corpus_embeddings(datasets: list[Dataset]) -> None:
 
     cached = __load_corpus_embeddings()
     filtered = [embedding for embedding in cached if embedding['id'] not in ids]
-    cached_ids = pluck(filtered, 'id')
-    cached_embeddings = pluck(filtered, 'embedding')
+
+    save_ids = ids
+    save_embeddings = corpus_embeddings
+
+    if (len(filtered) > 0):
+        save_ids += pluck(filtered, 'id')
+        save_embeddings += pluck(filtered, 'embedding')
 
     with open(corpus_embeddings_path, 'wb') as fOut:
-        pickle.dump({'ids': cached_ids + ids, 'embeddings': cached_embeddings + corpus_embeddings}, fOut)
+        pickle.dump({'ids': save_ids, 'embeddings': save_embeddings}, fOut)
 
 def __load_corpus_embeddings() -> list[Embedding]:
     if not os.path.exists(corpus_embeddings_path):
