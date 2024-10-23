@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from marshmallow import Schema, fields, ValidationError
-from transformer import score, cache_corpus_embeddings, __load_corpus_embeddings
+from transformer import score, cache_corpus_embeddings, remove_cached_embeddings
 
 class DatasetSchema(Schema):
     id = fields.String(required=True)
@@ -8,6 +8,9 @@ class DatasetSchema(Schema):
     
 class DatasetsSchema(Schema):
     datasets = fields.List(fields.Nested(DatasetSchema), required=True)
+
+class IdsSchema(Schema):
+    ids = fields.List(fields.String(), required=True)
 
 app = Flask(__name__)
 
@@ -32,6 +35,22 @@ def generate_embeddings() -> tuple[str, int]:
 
         if (len(datasets) > 0):
             cache_corpus_embeddings(datasets)
+    except ValidationError as err:
+        return jsonify(err.messages), 422
+    
+    return '', 204
+
+@app.route('/corpus', methods=['DELETE'])
+def remove_embeddings() -> tuple[str, int]:
+    request_data = request.json
+    schema = IdsSchema()
+
+    try:
+        result = schema.load(request_data)
+        ids = result['ids'] or []
+
+        if (len(ids) > 0):
+            remove_cached_embeddings(ids)
     except ValidationError as err:
         return jsonify(err.messages), 422
     
