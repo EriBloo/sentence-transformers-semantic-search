@@ -60,7 +60,8 @@ def remove_cached_embeddings(ids: list[str]) -> None:
     filtered = [embedding for embedding in cached if embedding['id'] not in ids]
     
     if len(filtered) == 0:
-        os.remove(corpus_embeddings_path)
+        if (os.path.exists(__corpus_embeddings_file())):
+            os.remove(__corpus_embeddings_file())
 
         return None
     
