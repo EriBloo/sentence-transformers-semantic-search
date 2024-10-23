@@ -6,7 +6,7 @@ import numpy
 from type import Dataset, Embedding, Score
 from helper import pluck
 model_path = r'/app/model'
-corpus_embeddings_path = '/app/corpus_cache.pkl'
+corpus_embeddings_path = '/app/data/corpus_cache.pkl'
 
 def score(search: str, possible: list[str]) -> list[Score]:
     model = SentenceTransformer(model_path)
