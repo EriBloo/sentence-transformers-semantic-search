@@ -5,8 +5,9 @@ import os
 import numpy
 from type import Dataset, Embedding, Score
 from helper import pluck
+
 model_path = r'/app/model'
-corpus_embeddings_path = '/app/data/corpus_cache.pkl'
+corpus_embeddings_path = '/app/data/'
 
 def score(search: str, possible: list[str]) -> list[Score]:
     model = SentenceTransformer(model_path)
@@ -48,7 +49,10 @@ def cache_corpus_embeddings(datasets: list[Dataset]) -> None:
         save_ids += pluck(filtered, 'id')
         save_embeddings += pluck(filtered, 'embedding')
 
-    with open(corpus_embeddings_path, 'wb') as fOut:
+    if not os.path.exists(corpus_embeddings_path):
+        os.mkdir(corpus_embeddings_path)
+
+    with open(__corpus_embeddings_file(), 'wb') as fOut:
         pickle.dump({'ids': save_ids, 'embeddings': save_embeddings}, fOut)
 
 def remove_cached_embeddings(ids: list[str]) -> None:
@@ -60,17 +64,19 @@ def remove_cached_embeddings(ids: list[str]) -> None:
 
         return None
     
-    with open(corpus_embeddings_path, 'wb') as fOut:
+    with open(__corpus_embeddings_file(), 'wb') as fOut:
         pickle.dump({'ids': pluck(filtered, 'id'), 'embeddings': pluck(filtered, 'embedding')}, fOut)
 
 def __load_corpus_embeddings() -> list[Embedding]:
-    if not os.path.exists(corpus_embeddings_path):
+    if not os.path.exists(__corpus_embeddings_file()):
         return []
 
-    with open(corpus_embeddings_path, 'rb') as fIn:
+    with open(__corpus_embeddings_file(), 'rb') as fIn:
         cache_data = pickle.load(fIn)
         ids = cache_data['ids']
         embeddings = cache_data['embeddings']
 
     return [{'id': z[0], 'embedding': z[1]} for z in zip(ids, embeddings)]
 
+def __corpus_embeddings_file() -> str:
+    return corpus_embeddings_path + 'corpus_cache.pkl'
