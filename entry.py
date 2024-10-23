@@ -1,16 +1,7 @@
 from flask import Flask, jsonify, request
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import ValidationError
 from transformer import score, cache_corpus_embeddings, remove_cached_embeddings
-
-class DatasetSchema(Schema):
-    id = fields.String(required=True)
-    name = fields.String(required=True)
-    
-class DatasetsSchema(Schema):
-    datasets = fields.List(fields.Nested(DatasetSchema), required=True)
-
-class IdsSchema(Schema):
-    ids = fields.List(fields.String(), required=True)
+from schema import DatasetsSchema, IdsSchema
 
 app = Flask(__name__)
 
