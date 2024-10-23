@@ -22,4 +22,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
-ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:5000", "entry:app" ]
+ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:5000", "-w", "4", "entry:app" ]
