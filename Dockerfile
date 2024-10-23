@@ -11,7 +11,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 
 ENV PATH=$CONDA_DIR/bin:$PATH
 
-RUN conda install -y pytorch torchvision torchaudio cpuonly -c pytorch
+RUN conda install -y pytorch cpuonly -c pytorch
 RUN conda install -y conda-forge::transformers
 
 WORKDIR /app
@@ -19,5 +19,7 @@ COPY entry.py transformer.py helper.py type.py schema.py requirements.txt /app/
 COPY model /app/model
 
 RUN pip install -r requirements.txt
+
+EXPOSE 5000
 
 ENTRYPOINT [ "python", "entry.py" ]
