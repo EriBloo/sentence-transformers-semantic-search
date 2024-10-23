@@ -7,7 +7,7 @@ class DatasetSchema(Schema):
     name = fields.String(required=True)
     
 class DatasetsSchema(Schema):
-    datasets = fields.List(fields.Nested(DatasetSchema))
+    datasets = fields.List(fields.Nested(DatasetSchema), required=True)
 
 app = Flask(__name__)
 
