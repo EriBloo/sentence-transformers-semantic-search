@@ -46,8 +46,8 @@ def cache_corpus_embeddings(datasets: list[Dataset]) -> None:
     save_embeddings = corpus_embeddings
 
     if (len(filtered) > 0):
-        save_ids += pluck(filtered, 'id')
-        save_embeddings += pluck(filtered, 'embedding')
+        save_ids= numpy.concatenate((pluck(filtered, 'id'), save_ids), axis=0)
+        save_embeddings = numpy.concatenate((pluck(filtered, 'embedding'), save_embeddings), axis=0)
 
     if not os.path.exists(corpus_embeddings_path):
         os.mkdir(corpus_embeddings_path)
